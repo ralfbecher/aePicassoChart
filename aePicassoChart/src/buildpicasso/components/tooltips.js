@@ -67,17 +67,19 @@ let rendertooltip = function(h, data){
   //console.log(data);
 
   let out = [];
-  out.push(h('div',{style:{fontWeight:'bold', fontSize:'1.2em', paddingBottom:'10px', textAlign:'center' }}, `${data[0].lines[0].label}`));
+  if (data.length > 0 && data[0].lines.length > 0) {
+    out.push(h('div',{style:{fontWeight:'bold', fontSize:'1.2em', paddingBottom:'10px', textAlign:'center' }}, `${data[0].lines[0].label}`));
 
-  let item1 = data[0].lines.map(e => {
-    if(e.show || typeof e.show == 'undefined'){
-      return h('div',{style:{fontWeight:'bold'}}, [`${e.title}:`, h('span',{style:{fontWeight:'normal',float:'right',paddingLeft:'10px'}},`${e.label}`)]);
-    }
-
-  });
-
-  out.push.apply(out,item1);
-
+    let item1 = data[0].lines.map(e => {
+      if(e.show || typeof e.show == 'undefined'){
+        return h('div',{style:{fontWeight:'bold'}}, [`${e.title}:`, h('span',{style:{fontWeight:'normal',float:'right',paddingLeft:'10px'}},`${e.label}`)]);
+      }
+  
+    });
+  
+    out.push.apply(out,item1);
+  }
+  
   return out;
 
 }

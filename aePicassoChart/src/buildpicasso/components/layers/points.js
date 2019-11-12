@@ -1,4 +1,5 @@
 import {colorForTheme} from '../../functions.js'
+import createLassoBrush from '../../brushes/lassobrush.js'
 
 var createPoint = function(pointDef) {
   var point = {
@@ -19,8 +20,16 @@ var createPoint = function(pointDef) {
         context: 'highlight',
         style: {
           inactive: {
-            opacity: 0.4
+            opacity: 0.3
           }
+        }
+      },
+      {
+        context: 'lasso',
+        style: {
+          inactive: {
+              opacity: 0.3
+            }
         }
       }]
     },
@@ -89,10 +98,11 @@ var createPoint = function(pointDef) {
   var label = null; //createBoxLabel(pointDef, 'circle');
 
   if (displayCount >= 2) {
+    var brush = createLassoBrush(pointDef.layername);
     if (label !== null) {
-      return [point, label];
+      return [point, label, brush];
     } else {
-      return [point];
+      return [point, brush];
     }
 
   } else {

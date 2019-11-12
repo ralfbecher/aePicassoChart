@@ -2,6 +2,7 @@
   "name": "aePicassoChart",
   "version": "0.4.0",
   "scripts": {
+    "qext-scripts": "qext-scripts",
     "build-webpack": "qext-scripts -b",
     "watch-webpack": "qext-scripts -w",
     "build-vanilla": "qext-scripts -B",

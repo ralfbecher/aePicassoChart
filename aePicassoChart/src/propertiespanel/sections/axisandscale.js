@@ -2,7 +2,8 @@ import bp from '../../buildpicasso.js';
 import {showForProperty, labelForProperty, objForConditionalProp, objForProp} from '../functions.js';
 
 let axisandscale = {
-  label: "Picasso Axis & Scales",
+  // label: "Picasso Axis & Scales",
+  label: "Axis & Scales",
   component: "expandable-items",
   items: {
     scales: {

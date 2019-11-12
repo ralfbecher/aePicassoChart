@@ -159,7 +159,7 @@ var optionsListForScales = function(scalesDef, valueType) {
       label: s.scalename
     });
   });
-  return list;
+;  return list;
 };
 
 export {props, setProps, colorForTheme, getThemeStyle, isVersionGreater, optionsListForFields, optionsListForFieldsDef, optionsListForDimensionsDef, optionsListForScales};

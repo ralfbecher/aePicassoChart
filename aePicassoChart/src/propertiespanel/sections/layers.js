@@ -672,7 +672,8 @@ let layeritems = {
 let layers = {
   type: "array",
   ref: "picassoprops.componentsDef.layers",
-  label: "Picasso Layers",
+  // label: "Picasso Layers",
+  label: "Layers",
   itemTitleRef: (a) => {
     return a.layertype + ": " + a.layername;
   }, //Need to lookup the layer type label from globally accessible option list

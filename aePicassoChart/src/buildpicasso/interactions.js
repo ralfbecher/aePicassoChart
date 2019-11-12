@@ -1,8 +1,8 @@
 import pq from 'picasso-plugin-q';
 
-var interactionsSetup = function(intDef, picassoprops) {
+var interactionsSetup = function(intDef, picassoprops, that) {
   "use strict";
-  let rangeRef = 'rangeY';
+  let rangeRef = '';
   var interactions = [{
     type: 'native',
     events: {
@@ -18,24 +18,36 @@ var interactionsSetup = function(intDef, picassoprops) {
           x: e.clientX,
           y: e.clientY
         })[0];
-        //console.log(overComp);
-        rangeRef = overComp && ~["left", "right"].indexOf(overComp.dock) ? 'rangeY' : 'rangeX';
 
-        // Fetch the range component instance and trigger the start event
-        //console.log(this.chart.component(rangeRef));
-        if (typeof this.chart.component(rangeRef) != 'undefined') {
-          this.chart.component(rangeRef).emit('rangeStart', mouseEventToRangeEvent(e));
+        if (overComp.dock) {
+          rangeRef = overComp && ~["left", "right"].indexOf(overComp.dock) ? 'rangeY' : 'rangeX';
+
+          // Fetch the range component instance and trigger the start event
+          //console.log(this.chart.component(rangeRef));
+          if (typeof this.chart.component(rangeRef) != 'undefined') {
+            this.chart.component(rangeRef).emit('rangeStart', mouseEventToRangeEvent(e));
+          }
+        } else {
+          this.chart.component('lasso').emit('lassoStart', { center: { x: e.clientX, y: e.clientY } });
         }
-
       },
       mousemove: function(e) {
         if (typeof this.chart.component(rangeRef) != 'undefined') {
           this.chart.component(rangeRef).emit('rangeMove', mouseEventToRangeEvent(e));
+        } else {
+          this.chart.component('lasso').emit('lassoMove', { center: { x: e.clientX, y: e.clientY } });
         }
       },
       mouseup: function(e) {
         if (typeof this.chart.component(rangeRef) != 'undefined') {
           this.chart.component(rangeRef).emit('rangeEnd', mouseEventToRangeEvent(e));
+          if (this.chart.hasOwnProperty('selectRangeValues') && this.chart.selectRangeValues.length > 0) {
+            that.backendApi.selectRange(this.chart.selectRangeValues, true);
+            this.chart.selectRangeValues = [];
+          }
+          rangeRef = '';
+        } else {
+          this.chart.component('lasso').emit('lassoEnd', { center: { x: e.clientX, y: e.clientY } });
         }
       }
     }
@@ -78,36 +90,48 @@ var mouseEventToRangeEvent = function(e) {
 
 
 
-var enableSelectionOnFirstDimension = function(that, chart, brush, layout) {
-  //console.log(that);
-  var chartBrush = chart.brush(brush);
-  //console.log(chartBrush);
-  chartBrush.on('start', (x) => {
-    //console.log("start");
-    //console.log(chartBrush.isActive);
-  });
-  chartBrush.on('update', (added, removed) => {
-    var selection = pq.selections(chartBrush)[0];
-    //console.log(selection);
+var enableSelectionOnFirstDimension = function(that, chart, rangeBrush, lassoBrush, layout) {
+  var chartRangeBrush = chart.brush(rangeBrush);
+  // chartBrush.on('start', () => {
+  // });
+  chartRangeBrush.on('update', (added, removed) => {
+    var selection = pq.selections(chartRangeBrush)[0];
+    // console.log('range', selection.method);
     if (selection.method === 'resetMadeSelections') {
-      //console.log
-      chartBrush.end();
+      chartRangeBrush.end();
       that.backendApi.clearSelections();
     } else
     if (selection.method === 'selectHyperCubeValues') {
-      that.selectValues(selection.params[1], selection.params[2], false);
+      if (selection.params[2].indexOf(-2) > -1) {
+        selection.params[2] = selection.params[2].filter(function(e){e>=0});
+      }
+      if (selection.params[2].length > 0) {
+        that.selectValues(selection.params[1], selection.params[2], false);
+      }
     } else
     if (selection.method === 'rangeSelectHyperCubeValues') {
-      if (chartBrush.isActive) {
-        that.backendApi.selectRange(selection.params[1], true);
-      } else {
-
+      if (chartRangeBrush.isActive) {
+        chart.selectRangeValues = selection.params[1];
       }
-
-
     }
   });
-  return chartBrush;
+  var chartLassoBrush = chart.brush(lassoBrush);
+  chartLassoBrush.on('update', (added, removed) => {
+    var selection = pq.selections(chartLassoBrush)[0];
+    // console.log('lasso', selection.method);
+    if (selection.method === 'resetMadeSelections') {
+      chartLassoBrush.end();
+      that.backendApi.clearSelections();
+    } else if (selection.method === 'selectHyperCubeValues') {
+      if (selection.params[2].indexOf(-2) > -1) {
+        selection.params[2] = selection.params[2].filter(function(e){e>=0});
+      }
+      if (selection.params[2].length > 0) {
+        that.selectValues(selection.params[1], selection.params[2], true);
+      }
+    } 
+  });
+  return [chartRangeBrush, chartLassoBrush];
 };
 
 export {

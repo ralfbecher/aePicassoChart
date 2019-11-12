@@ -119,7 +119,7 @@ var createAxis = function(axisDef, hypercube, scalesDef, theme) {
             }
           };
 
-    if(dimMes[0] == "qDimensionInfo"){
+    if(dimMes[0] == "qDimensionInfo" || dimMes[0] == "qMeasureInfo"){
       var brush = createRangeBrush(axisDef);
       return [axis, axisTitle, scroll, brush];
     }else{

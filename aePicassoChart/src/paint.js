@@ -1,5 +1,5 @@
 import picasso from 'picasso.js';
-import pq from 'picasso-plugin-q';
+// import pq from 'picasso-plugin-q';
 import bp from './buildpicasso.js';
 
 var qlik = window.require('qlik');
@@ -92,7 +92,7 @@ var redrawChart = function($element, layout, self, first) {
     var collectionsDef = bp.createCollections(layout.qHyperCube);
     var scalesDef = bp.createScales(layout.picassoprops.scalesDef);
     var componentsDef = bp.createComponents(layout.picassoprops, layout.qHyperCube); //We need more than just the componentsdef so send whole picassoprops
-    var interactionsDef = bp.interactionsSetup({}, layout.picassoprops);
+    var interactionsDef = bp.interactionsSetup({}, layout.picassoprops, self);
 
 
     var settings = {
@@ -112,7 +112,7 @@ var redrawChart = function($element, layout, self, first) {
       settings: settings
     });
 
-    self.chartBrush = bp.enableSelectionOnFirstDimension(self, self.chart, 'highlight', layout);
+    self.chartBrush = bp.enableSelectionOnFirstDimension(self, self.chart, 'highlight', 'lasso', layout);
   }
 };
 
@@ -239,7 +239,8 @@ export default function($element, layout) {
 
 
   return new Promise(function(resolve, reject) {
-    if (self.chartBrush.isActive) self.chartBrush.end();
+    if (self.chartBrush[0].isActive) self.chartBrush[0].end();
+    if (self.chartBrush[1].isActive) self.chartBrush[1].end();
     resolve(layout);
     self.chart.update({
       data: [{

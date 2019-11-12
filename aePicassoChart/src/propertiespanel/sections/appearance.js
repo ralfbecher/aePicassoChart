@@ -3,7 +3,8 @@ let appearance = {
   items: {
     style: {
       type: "items",
-      label: "Picasso Theme",
+      // label: "Picasso Theme",
+      label: "Theme",
       grouped: true,
       items: {
         about1: {
