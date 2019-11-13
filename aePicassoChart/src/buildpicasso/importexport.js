@@ -11,7 +11,7 @@ charts['scatter'] = charttemplate_scatter;
 
 
 var exportChart = function(picassoprops) {
-  console.log("Export Chart Spec");
+  //console.log("Export Chart Spec");
   var expDate = new Date(Date.now());
   var specout = {
     info: {
@@ -47,7 +47,7 @@ var download = function(filename, text) {
 
 var importChart = function(chartspec, picassoprops, save) {
   //TODO: This will be to import the chart from an archive file
-  console.log(chartspec);
+  //console.log(chartspec);
   if (chartspec != 'custom') {
     try {
       //var response = JSON.parse(charts[chartspec]);

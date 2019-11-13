@@ -23,6 +23,12 @@ let tooltipdata = function(data, hypercube){
         }
       }
 
+      //Legend
+      if(iout.lines.length === 0 && data.hasOwnProperty('label') && data.hasOwnProperty('source')) {
+        let cubeobj = hypercube.qDimensionInfo[data.source.field.split("/")[1]];
+        iout.lines.push({title:cubeobj.qFallbackTitle, label:data.label, field:data.source.field, show:cubeobj.showintooltip});
+      }
+
     }else{
       //Special case for box layer
       //Dimension

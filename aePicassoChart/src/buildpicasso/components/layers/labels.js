@@ -95,7 +95,7 @@ var createPieLabel = function(pieDef) {
             fontFamily: '"QlikView Sans", sans-serif',
             labels: [{
               label: (d) => {
-                console.log(d);
+                // console.log(d);
                 return d.data.label;
               },
               placements: [ // label placements in prio order. Label will be placed in the first place it fits into

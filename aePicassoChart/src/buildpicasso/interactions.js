@@ -19,7 +19,7 @@ var interactionsSetup = function(intDef, picassoprops, that) {
           y: e.clientY
         })[0];
 
-        if (overComp.dock) {
+        if (overComp.hasOwnProperty('dock')) {
           rangeRef = overComp && ~["left", "right"].indexOf(overComp.dock) ? 'rangeY' : 'rangeX';
 
           // Fetch the range component instance and trigger the start event

@@ -62,7 +62,7 @@ let templates = {
               }*/
         ],
         change: (x, y) => {
-          console.log(x.picassoprops.loadtemplate);
+          //console.log(x.picassoprops.loadtemplate);
           bp.importChart(x.picassoprops.loadtemplate, x.picassoprops, true);
         },
         show: (x, y) => {
@@ -93,7 +93,7 @@ let templates = {
           return x.picassoprops.enableexp
         },
         action: (x) => {
-          console.log(x);
+          //console.log(x);
           bp.exportChart(x.picassoprops);
         }
       }

@@ -72,7 +72,7 @@ var createScales = function(scalesDef) {
       scalesObj[scale.scalename].range = scale.colorrange.split(";");
     }
 
-    console.log(scalesObj[scale.scalename]);
+    //console.log(scalesObj[scale.scalename]);
 
   });
   return scalesObj;

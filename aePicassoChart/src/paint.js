@@ -171,8 +171,8 @@ var updateData = function(layout, self, getNewData) {
       }]
     });
   }
-  console.log("Data");
-  console.log(self.chart.dataset(0));
+  //console.log("Data");
+  //console.log(self.chart.dataset(0));
 };
 
 export default function($element, layout) {
@@ -180,7 +180,7 @@ export default function($element, layout) {
   bp.setProps(layout);
   //Theme Processing
   var app = qlik.currApp(this);
-  console.log(app.theme);
+  //console.log(app.theme);
   try{
     var theme = app.theme.getApplied().then(function(qtheme) {
       if (typeof layout.theme == 'undefined') layout.theme = qtheme;
@@ -188,7 +188,7 @@ export default function($element, layout) {
         layout.theme = qtheme;
         bp.setProps(layout);
         //console.log(qtheme.getStyle('object', 'label.name', 'color'));
-        console.log(qtheme);
+        //console.log(qtheme);
         createPicassoWithStyle(self, layout, qtheme);
         redrawChart($element, layout, self, true);
         updateData(layout, self, true, true);
@@ -205,7 +205,7 @@ export default function($element, layout) {
   });*/
 
   layout.picassoprops.fieldOptions = bp.optionsListForFields(layout.qHyperCube);
-  console.log(layout);
+  //console.log(layout);
 
   var first = false;
   if (typeof this.chart == 'undefined') {

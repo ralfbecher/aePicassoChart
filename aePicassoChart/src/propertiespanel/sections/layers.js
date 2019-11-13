@@ -36,10 +36,10 @@ let layeritems = {
                 label: "Grid"
               }
             ],
-            change: (a) => {
-              console.log("Changed to Layer Type: ");
-              console.log(a);
-            }
+            // change: (a) => {
+              //console.log("Changed to Layer Type: ");
+              //console.log(a);
+            // }
           },
           layername: {
             type: "string",
