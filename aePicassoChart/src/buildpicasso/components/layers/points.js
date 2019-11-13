@@ -19,6 +19,10 @@ var createPoint = function(pointDef) {
       consume: [{
         context: 'highlight',
         style: {
+          active: {
+            stroke: colorForTheme(pointDef.primarycolor),
+            strokeWidth: pointDef.primarywidth
+          },
           inactive: {
             opacity: 0.3
           }
@@ -27,6 +31,10 @@ var createPoint = function(pointDef) {
       {
         context: 'lasso',
         style: {
+          active: {
+            stroke: colorForTheme(pointDef.primarycolor),
+            strokeWidth: pointDef.primarywidth
+          },
           inactive: {
               opacity: 0.3
             }
