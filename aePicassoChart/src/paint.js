@@ -177,6 +177,8 @@ var updateData = function(layout, self, getNewData) {
 
 export default function($element, layout) {
   var self = this;
+  // self.enigma = $element.scope().model.enigmaModel;
+  // self.objId = layout.qInfo.qId;
   bp.setProps(layout);
   //Theme Processing
   var app = qlik.currApp(this);

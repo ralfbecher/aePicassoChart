@@ -7,6 +7,7 @@ var interactionsSetup = function(intDef, picassoprops, that) {
     type: 'native',
     events: {
       mousedown: function(e) {
+        that.lassoMouseUp = 0;
         // Use Alt-key + click to reset the brush
         /*  if (e.altKey) {
             this.chart.brush('highlight').end();
@@ -47,6 +48,7 @@ var interactionsSetup = function(intDef, picassoprops, that) {
           }
           rangeRef = '';
         } else {
+          that.lassoMouseUp ++;
           this.chart.component('lasso').emit('lassoEnd', { center: { x: e.clientX, y: e.clientY } });
         }
       }
@@ -92,11 +94,12 @@ var mouseEventToRangeEvent = function(e) {
 
 var enableSelectionOnFirstDimension = function(that, chart, rangeBrush, lassoBrush, layout) {
   var chartRangeBrush = chart.brush(rangeBrush);
-  // chartBrush.on('start', () => {
-  // });
+  var chartLassoBrush = chart.brush(lassoBrush);
+  chartRangeBrush.on('start', () => {
+    chartLassoBrush.end();
+  });
   chartRangeBrush.on('update', (added, removed) => {
     var selection = pq.selections(chartRangeBrush)[0];
-    // console.log('range', selection.method);
     if (selection.method === 'resetMadeSelections') {
       chartRangeBrush.end();
       that.backendApi.clearSelections();
@@ -115,10 +118,11 @@ var enableSelectionOnFirstDimension = function(that, chart, rangeBrush, lassoBru
       }
     }
   });
-  var chartLassoBrush = chart.brush(lassoBrush);
+  chartLassoBrush.on('start', () => {
+    chartRangeBrush.end();
+  }); 
   chartLassoBrush.on('update', (added, removed) => {
     var selection = pq.selections(chartLassoBrush)[0];
-    // console.log('lasso', selection.method);
     if (selection.method === 'resetMadeSelections') {
       chartLassoBrush.end();
       that.backendApi.clearSelections();
@@ -127,7 +131,9 @@ var enableSelectionOnFirstDimension = function(that, chart, rangeBrush, lassoBru
         selection.params[2] = selection.params[2].filter(function(e){e>=0});
       }
       if (selection.params[2].length > 0) {
-        that.selectValues(selection.params[1], selection.params[2], true);
+        if (that.hasOwnProperty('lassoMouseUp') && that.lassoMouseUp >= 2) {
+          that.selectValues(selection.params[1], selection.params[2], false);
+        }
       }
     } 
   });
