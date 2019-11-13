@@ -107,10 +107,16 @@ var redrawChart = function($element, layout, self, first) {
     /*** Having to recreate the chart as when updating the settings the line layer does not refresh (might be bug in picasso)
     /*****************************************************************************************************/
 
-    self.chart = self.pic.chart({
-      element: $element.find('.lrp')[0],
-      settings: settings
-    });
+    if (!self.hasOwnProperty('chart')) {
+      self.chart = self.pic.chart({
+        element: $element.find('.lrp')[0],
+        settings: settings
+      });
+    } else {
+      self.chart.update({
+        settings: settings
+      });  
+    }
 
     self.chartBrush = bp.enableSelectionOnFirstDimension(self, self.chart, 'highlight', 'lasso', layout);
   }

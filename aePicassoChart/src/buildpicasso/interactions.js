@@ -7,7 +7,6 @@ var interactionsSetup = function(intDef, picassoprops, that) {
     type: 'native',
     events: {
       mousedown: function(e) {
-        that.lassoMouseUp = 0;
         // Use Alt-key + click to reset the brush
         /*  if (e.altKey) {
             this.chart.brush('highlight').end();
@@ -48,7 +47,6 @@ var interactionsSetup = function(intDef, picassoprops, that) {
           }
           rangeRef = '';
         } else {
-          that.lassoMouseUp ++;
           this.chart.component('lasso').emit('lassoEnd', { center: { x: e.clientX, y: e.clientY } });
         }
       }
@@ -131,9 +129,7 @@ var enableSelectionOnFirstDimension = function(that, chart, rangeBrush, lassoBru
         selection.params[2] = selection.params[2].filter(function(e){e>=0});
       }
       if (selection.params[2].length > 0) {
-        if (that.hasOwnProperty('lassoMouseUp') && that.lassoMouseUp >= 2) {
-          that.selectValues(selection.params[1], selection.params[2], false);
-        }
+        that.selectValues(selection.params[1], selection.params[2], false);
       }
     } 
   });
