@@ -122,53 +122,49 @@ var redrawChart = function($element, layout, self, first) {
   }
 };
 
-var updateData = function(layout, self, getNewData) {
-  //console.log(self);
-  var size = {};
-  try {
-    size = {
-      qTop: layout.picassoprops.cube.top,
-      qLeft: layout.picassoprops.cube.left,
-      qWidth: layout.picassoprops.cube.width,
-      qHeight: layout.picassoprops.cube.height
-    };
+var getDataPages = function(qlik, layout, enigmaModel, maxPages) {
+  var pageWidth = Math.max(1, layout.qHyperCube.qSize.qcx),
+    pageHeight = Math.floor(10000 / pageWidth),
+    cubeSize = layout.qHyperCube.qSize.qcy,
+    remainingPages = Math.min((cubeSize / pageHeight), maxPages),
+    cubeData = [];
 
-    if (!layout.picassoprops.cube.limit) {
-      //If limit is switched off, then use hypercube size
-      size.qTop = 0;
-      size.qLeft = 0;
-      size.qWidth = layout.qHyperCube.qSize.qcx;
-      size.qHeight = layout.qHyperCube.qSize.qcy;
+    var dataPages = [];
+    for (var i = 0; i < remainingPages; i++) {
+      dataPages.push({
+        qTop: pageHeight * i,
+        qLeft: 0,
+        qWidth: pageWidth,
+        qHeight: pageHeight
+      });
     }
 
-  } catch (err) {
-    size = {
-      qTop: 0,
-      qLeft: 0,
-      qWidth: layout.qHyperCube.qSize.qcx,
-      qHeight: layout.qHyperCube.qSize.qcy
-    };
-  }
-
-  //console.log(size);
-  if (getNewData) {
-
-    self.backendApi.getData([size]).then(function(qdp) {
-      if (layout.qHyperCube.qDataPages.length > 1) {
-        //Keep the latest qDataPages
-        layout.qHyperCube.qDataPages.splice(0, layout.qHyperCube.qDataPages.length - 1);
-      }
-
-      //layout.qHyperCube.qDataPages.length = 1;
-      self.chart.update({
-        data: [{
-          type: 'q',
-          key: 'qHyperCube',
-          data: layout.qHyperCube
-        }]
+    var objectId = layout.qExtendsId ? layout.qExtendsId : 
+      (layout.sourceObjectId ? layout.sourceObjectId : layout.qInfo.qId);
+    
+    return enigmaModel.app.getObject(objectId).then(function (obj) {
+      var promises = dataPages.map(function (page) {
+        return obj.getHyperCubeData('/qHyperCubeDef', [page]);
+      });
+      return qlik.Promise.all(promises).then(function (pages) {
+        pages.forEach(function (page) {
+          cubeData = cubeData.concat(page[0].qMatrix);
+        })
+        return cubeData;
       });
     });
-  } else {
+}
+
+var updateData = function(qlik, self, layout, enigma, maxPages) {
+  getDataPages(qlik, layout, enigma, maxPages)
+  .then(data => {
+    layout.qHyperCube.qDataPages[0].qMatrix = data;
+    if (data.length > 0) {
+      layout.qHyperCube.qDataPages[0].qArea.qWidth = data[0].length;
+    } else {
+      layout.qHyperCube.qDataPages[0].qArea.qWidth = 0;
+    }
+    layout.qHyperCube.qDataPages[0].qArea.qHeight = data.length;
     self.chart.update({
       data: [{
         type: 'q',
@@ -176,14 +172,12 @@ var updateData = function(layout, self, getNewData) {
         data: layout.qHyperCube
       }]
     });
-  }
-  //console.log("Data");
-  //console.log(self.chart.dataset(0));
+  });
 };
 
 export default function($element, layout) {
   var self = this;
-  // self.enigma = $element.scope().model.enigmaModel;
+  self.enigma = $element.scope().model.enigmaModel;
   // self.objId = layout.qInfo.qId;
   bp.setProps(layout);
   //Theme Processing
@@ -199,8 +193,6 @@ export default function($element, layout) {
         //console.log(qtheme);
         createPicassoWithStyle(self, layout, qtheme);
         redrawChart($element, layout, self, true);
-        updateData(layout, self, true, true);
-
       }
 
     });
@@ -242,20 +234,13 @@ export default function($element, layout) {
   }
   createPicassoWithStyle(self, layout, null);
   redrawChart($element, layout, self, first);
-  updateData(layout, self, true);
+  updateData(qlik, self, layout, self.enigma, qlik.navigation.getMode() === 'edit'? 1 : 4);
 
-
-
-  return new Promise(function(resolve, reject) {
+  return new qlik.Promise(function(resolve, reject) {
     if (self.chartBrush[0].isActive) self.chartBrush[0].end();
     if (self.chartBrush[1].isActive) self.chartBrush[1].end();
-    resolve(layout);
-    self.chart.update({
-      data: [{
-        type: 'q',
-        key: 'qHyperCube',
-        data: layout.qHyperCube
-      }]
-    });
-  })
+    setTimeout(function () {
+      resolve();
+    }, 400);
+  });
 }

@@ -20,7 +20,9 @@ var createScales = function(scalesDef) {
     var fields = [];
     scaleFieldArray(scale,fields,1,3);
 
-    if (scale.scalefield.split("/")[0] == "qDimensionInfo") {
+    var scalefieldType = scale.scalefield.split("/");
+
+    if (scalefieldType[0] == "qDimensionInfo") {
 
       var extract = {};
       if(fields.length == 1){
@@ -68,10 +70,18 @@ var createScales = function(scalesDef) {
     }
 
     if(scale.scaletype == "categorical-color"){
-      //scalesObj[scale.scalename].domain = scale.colordomain.split(";");
+      var isDomainColors = (scale.colordomain && scale.colordomain.length > 0 && scale.colordomain.split(";").length > 0);
+      if (isDomainColors) {
+        scalesObj[scale.scalename].domain = scale.colordomain.split(";");
+      }
       scalesObj[scale.scalename].range = scale.colorrange.split(";");
-    }
 
+      // if color field 2nd+ dimension we need to sort
+      if (scalefieldType[1] !== "0") {
+        scalesObj[scale.scalename].data.sort = (a, b) => a.label > b.label ? 1 : -1;
+      }
+    }
+    console.log(scalesObj);
     //console.log(scalesObj[scale.scalename]);
 
   });

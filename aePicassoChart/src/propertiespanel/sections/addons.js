@@ -113,64 +113,64 @@ let addons = {
         }
       }
     },
-    hypercubeSize: {
-      label: "Hypercube Size",
-      type: "items",
-      items: {
-        content: {
-          type: "items",
-          show: (d) => {
-            var vc = bp.isVersionGreater(d.createdVersion, "0.2.2");
-            return vc;
-          },
-          items: {
-            hqlimit: {
-              type: "boolean",
-              ref: "picassoprops.cube.limit",
-              label: "Limit Cube Size",
-              defaultValue: false
-            },
-            hqtop: {
-              type: "number",
-              ref: "picassoprops.cube.top",
-              label: "Top",
-              defaultValue: 0,
-              show: (a) => {return a.picassoprops.cube.limit}
-            },
-            hqleft: {
-              type: "number",
-              ref: "picassoprops.cube.left",
-              label: "Left",
-              defaultValue: 0,
-              show: (a) => {return a.picassoprops.cube.limit}
-            },
-            hqwidth: {
-              type: "number",
-              ref: "picassoprops.cube.width",
-              label: "Width",
-              defaultValue: 0,
-              show: (a) => {return a.picassoprops.cube.limit}
-            },
-            hqheight: {
-              type: "number",
-              ref: "picassoprops.cube.height",
-              label: "Height",
-              defaultValue: 0,
-              show: (a) => {return a.picassoprops.cube.limit}
-            },
-          }
-        },
-        info: {
-          type: "string",
-          component: "text",
-          label: "These settings will only work on a new charts created after version 0.2.2",
-          show: (d) => {
-            var vc = bp.isVersionGreater(d.createdVersion, "0.2.2");
-            return !vc;
-          }
-        },
-      }
-    },
+    // hypercubeSize: {
+    //   label: "Hypercube Size",
+    //   type: "items",
+    //   items: {
+    //     content: {
+    //       type: "items",
+    //       show: (d) => {
+    //         var vc = bp.isVersionGreater(d.createdVersion, "0.2.2");
+    //         return vc;
+    //       },
+    //       items: {
+    //         hqlimit: {
+    //           type: "boolean",
+    //           ref: "picassoprops.cube.limit",
+    //           label: "Limit Cube Size",
+    //           defaultValue: false
+    //         },
+    //         hqtop: {
+    //           type: "number",
+    //           ref: "picassoprops.cube.top",
+    //           label: "Top",
+    //           defaultValue: 0,
+    //           show: (a) => {return a.picassoprops.cube.limit}
+    //         },
+    //         hqleft: {
+    //           type: "number",
+    //           ref: "picassoprops.cube.left",
+    //           label: "Left",
+    //           defaultValue: 0,
+    //           show: (a) => {return a.picassoprops.cube.limit}
+    //         },
+    //         hqwidth: {
+    //           type: "number",
+    //           ref: "picassoprops.cube.width",
+    //           label: "Width",
+    //           defaultValue: 0,
+    //           show: (a) => {return a.picassoprops.cube.limit}
+    //         },
+    //         hqheight: {
+    //           type: "number",
+    //           ref: "picassoprops.cube.height",
+    //           label: "Height",
+    //           defaultValue: 0,
+    //           show: (a) => {return a.picassoprops.cube.limit}
+    //         },
+    //       }
+    //     },
+    //     info: {
+    //       type: "string",
+    //       component: "text",
+    //       label: "These settings will only work on a new charts created after version 0.2.2",
+    //       show: (d) => {
+    //         var vc = bp.isVersionGreater(d.createdVersion, "0.2.2");
+    //         return !vc;
+    //       }
+    //     },
+    //   }
+    // },
     tooltip:{
       label:"Tooltip",
       type:"items",

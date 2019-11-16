@@ -82,6 +82,7 @@ var createPoint = function(pointDef) {
       scale: pointDef.layerscale3,
       ref: pointDef.layerfield3
     }
+    point.settings.opacity = 0.8;
     displayCount++;
   }
 

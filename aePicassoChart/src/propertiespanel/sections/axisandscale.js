@@ -169,15 +169,15 @@ let axisandscale = {
           expression:"optional",
           defaultValue: "",
           show: (x) => {
-            return (x.scaletype == "threshold-color")
+            return (x.scaletype == "threshold-color" || x.scaletype == "categorical-color")
           }
         },
         colordomainhint:{
           component: "text",
           style:"hint",
-          label:"Domain should be values for the threshold levels delimetered by ;",
+          label:"Domain should be values for the threshold levels or all categorical values delimetered by ;",
           show: (x) => {
-            return (x.scaletype == "threshold-color")
+            return (x.scaletype == "threshold-color"|| x.scaletype == "categorical-color")
           }
         }
       }
