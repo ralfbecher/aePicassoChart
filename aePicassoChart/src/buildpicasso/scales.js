@@ -81,7 +81,6 @@ var createScales = function(scalesDef) {
         scalesObj[scale.scalename].data.sort = (a, b) => a.label > b.label ? 1 : -1;
       }
     }
-    console.log(scalesObj);
     //console.log(scalesObj[scale.scalename]);
 
   });

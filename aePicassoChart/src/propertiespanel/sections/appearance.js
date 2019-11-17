@@ -1,9 +1,35 @@
 let appearance = {
   uses: "settings",
   items: {
-    style: {
+    data: {
       type: "items",
-      // label: "Picasso Theme",
+      label: "Data Handling",
+      grouped: true,
+      items: {
+        dataPages : {
+          ref: "dataPages",
+          label: "Amount of data pages to load",
+          expression: "optional",
+          type: "integer",
+          defaultValue: 4
+        },
+        showDataPointHint : {
+          ref: "showDataPointHint",
+          label: "Show data point hint",
+          type: "boolean",
+          component: "switch",
+          defaultValue: false,
+          options: [{
+            value: true,
+            label: "On"
+          }, {
+            value: false,
+            label: "Off"
+          }]
+        }
+      }
+    },
+    style: {
       label: "Theme",
       grouped: true,
       items: {

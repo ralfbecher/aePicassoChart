@@ -156,6 +156,7 @@ var getDataPages = function(qlik, layout, enigmaModel, maxPages) {
 }
 
 var updateData = function(qlik, self, layout, enigma, maxPages) {
+  if (!maxPages || maxPages <= 0) maxPages = 1;
   getDataPages(qlik, layout, enigma, maxPages)
   .then(data => {
     layout.qHyperCube.qDataPages[0].qMatrix = data;
@@ -165,6 +166,18 @@ var updateData = function(qlik, self, layout, enigma, maxPages) {
       layout.qHyperCube.qDataPages[0].qArea.qWidth = 0;
     }
     layout.qHyperCube.qDataPages[0].qArea.qHeight = data.length;
+
+    if (layout.showDataPointHint) {
+      var footnote = "";
+      if (layout.qHyperCube.qSize.qcy > data.length) {
+        footnote = layout.footnote = data.length + ' of ' + layout.qHyperCube.qSize.qcy;
+      } else {
+        footnote = layout.qHyperCube.qSize.qcy;
+      }
+      layout.footnote = footnote + ' data points shown..';
+      setTimeout(() => layout.footnote = "", 1000);  
+    }
+  
     self.chart.update({
       data: [{
         type: 'q',
@@ -234,8 +247,8 @@ export default function($element, layout) {
   }
   createPicassoWithStyle(self, layout, null);
   redrawChart($element, layout, self, first);
-  updateData(qlik, self, layout, self.enigma, qlik.navigation.getMode() === 'edit'? 1 : 4);
-
+  updateData(qlik, self, layout, self.enigma, qlik.navigation.getMode() === 'edit'? 1 : layout.dataPages);
+  
   return new qlik.Promise(function(resolve, reject) {
     if (self.chartBrush[0].isActive) self.chartBrush[0].end();
     if (self.chartBrush[1].isActive) self.chartBrush[1].end();
