@@ -149,7 +149,7 @@ var getDataPages = function(qlik, layout, enigmaModel, maxPages) {
       return qlik.Promise.all(promises).then(function (pages) {
         pages.forEach(function (page) {
           cubeData = cubeData.concat(page[0].qMatrix);
-        })
+        });
         return cubeData;
       });
     });
@@ -167,6 +167,14 @@ var updateData = function(qlik, self, layout, enigma, maxPages) {
     }
     layout.qHyperCube.qDataPages[0].qArea.qHeight = data.length;
 
+    self.chart.update({
+      data: [{
+        type: 'q',
+        key: 'qHyperCube',
+        data: layout.qHyperCube
+      }]
+    });
+
     if (layout.showDataPointHint) {
       var footnote = "";
       if (layout.qHyperCube.qSize.qcy > data.length) {
@@ -175,16 +183,8 @@ var updateData = function(qlik, self, layout, enigma, maxPages) {
         footnote = layout.qHyperCube.qSize.qcy;
       }
       layout.footnote = footnote + ' data points shown..';
-      setTimeout(() => layout.footnote = "", 1000);  
     }
   
-    self.chart.update({
-      data: [{
-        type: 'q',
-        key: 'qHyperCube',
-        data: layout.qHyperCube
-      }]
-    });
   });
 };
 
