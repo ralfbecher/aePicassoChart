@@ -179,6 +179,15 @@ let axisandscale = {
           show: (x) => {
             return (x.scaletype == "threshold-color"|| x.scaletype == "categorical-color")
           }
+        },
+        sortcolorfield: {
+          type: "boolean",
+          ref: "sortcolorfield",
+          label: "Sort Color Field alphabetically",
+          defaultValue: false,
+          show: (x) => {
+            return (x.scaletype == "categorical-color")
+          }
         }
       }
     },

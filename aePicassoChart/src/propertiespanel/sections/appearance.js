@@ -1,7 +1,7 @@
 let appearance = {
   uses: "settings",
   items: {
-    data: {
+    dataHandling: {
       type: "items",
       label: "Data Handling",
       grouped: true,

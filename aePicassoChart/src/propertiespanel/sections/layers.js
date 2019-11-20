@@ -425,9 +425,9 @@ let layeritems = {
                 ref: "pointsize",
                 label: "Point Size",
                 defaultValue: 1,
-                min: 0.1,
+                min: 0.05,
                 max: 1,
-                step: 0.1
+                step: 0.05
               }
             }
           }

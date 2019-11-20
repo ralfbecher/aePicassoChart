@@ -77,7 +77,7 @@ var createScales = function(scalesDef) {
       scalesObj[scale.scalename].range = scale.colorrange.split(";");
 
       // if color field 2nd+ dimension we need to sort
-      if (scalefieldType[1] !== "0") {
+      if (scalefieldType[1] !== "0" && scale.sortcolorfield) {
         scalesObj[scale.scalename].data.sort = (a, b) => a.label > b.label ? 1 : -1;
       }
     }
