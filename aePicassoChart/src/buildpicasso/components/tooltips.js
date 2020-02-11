@@ -62,7 +62,6 @@ let rendertooltip = function(h, data){
   for(var i = data.length - 1; i >= 0; i--){
     //console.log(i);
     var f = data.filter((obj) => {return obj.key == data[i].key});
-    //console.log(f);
     if(f.length > 1){
       //Remove this item from the list as we wont need it
       //console.log("Removing: " + i);
@@ -70,10 +69,13 @@ let rendertooltip = function(h, data){
     }
   }
 
-  //console.log(data);
-
   let out = [];
   if (data.length > 0 && data[0].lines.length > 0) {
+    if (data.length > 1) {
+      // show last data point only (it defines the color because it was painted at last)
+      data.splice(0, data.length -1);
+    }
+    
     out.push(h('div',{style:{fontWeight:'bold', fontSize:'1.2em', paddingBottom:'10px', textAlign:'center' }}, `${data[0].lines[0].label}`));
 
     let item1 = data[0].lines.map(e => {
@@ -85,7 +87,7 @@ let rendertooltip = function(h, data){
   
     out.push.apply(out,item1);
   }
-  
+    
   return out;
 
 }
