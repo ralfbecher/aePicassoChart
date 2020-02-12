@@ -72,20 +72,24 @@ let rendertooltip = function(h, data){
   let out = [];
   if (data.length > 0 && data[0].lines.length > 0) {
     if (data.length > 1) {
-      // show last data point only (it defines the color because it was painted at last)
+      // having multiple data points at same position, aggregate labels
+      var label = data.map(e => { return lines[0].label; }).join(', ');
       data.splice(0, data.length -1);
+      data[0].lines[0].label = label;
     }
     
-    out.push(h('div',{style:{fontWeight:'bold', fontSize:'1.2em', paddingBottom:'10px', textAlign:'center' }}, `${data[0].lines[0].label}`));
+      out.push(h('div',{style:{fontWeight:'bold', fontSize:'1.2em', paddingBottom:'10px', textAlign:'center' }}, `${data[0].lines[0].label}`));
+    
+      let item1 = data[i].lines.map(e => {
+          if(e.show || typeof e.show == 'undefined'){
+          return h('div',{style:{fontWeight:'bold'}}, [`${e.title}:`, h('span',{style:{fontWeight:'normal',float:'right',paddingLeft:'10px'}},`${e.label}`)]);
+        }
+    
+      });
+    
+      out.push.apply(out,item1);
 
-    let item1 = data[0].lines.map(e => {
-      if(e.show || typeof e.show == 'undefined'){
-        return h('div',{style:{fontWeight:'bold'}}, [`${e.title}:`, h('span',{style:{fontWeight:'normal',float:'right',paddingLeft:'10px'}},`${e.label}`)]);
-      }
-  
-    });
-  
-    out.push.apply(out,item1);
+    }
   }
     
   return out;
