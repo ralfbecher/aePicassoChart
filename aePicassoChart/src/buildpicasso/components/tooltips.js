@@ -73,23 +73,25 @@ let rendertooltip = function(h, data){
   if (data.length > 0 && data[0].lines.length > 0) {
     if (data.length > 1) {
       // having multiple data points at same position, aggregate labels
-      var label = data.map(e => { return lines[0].label; }).join(', ');
+      var label = data.map(e => { return e.lines[0].label; }).reverse();
+      if (label.length > 3) { // show the first 3 labels
+        label.splice(0, 3);
+        label.push('...');
+      }
       data.splice(0, data.length -1);
-      data[0].lines[0].label = label;
+      data[0].lines[0].label = label.join(', ');
     }
     
-      out.push(h('div',{style:{fontWeight:'bold', fontSize:'1.2em', paddingBottom:'10px', textAlign:'center' }}, `${data[0].lines[0].label}`));
+    out.push(h('div',{style:{fontWeight:'bold', fontSize:'1.2em', paddingBottom:'10px', textAlign:'center' }}, `${data[0].lines[0].label}`));
+  
+    let item1 = data[0].lines.map(e => {
+        if(e.show || typeof e.show == 'undefined'){
+        return h('div',{style:{fontWeight:'bold'}}, [`${e.title}:`, h('span',{style:{fontWeight:'normal',float:'right',paddingLeft:'10px'}},`${e.label}`)]);
+      }
+  
+    });
     
-      let item1 = data[i].lines.map(e => {
-          if(e.show || typeof e.show == 'undefined'){
-          return h('div',{style:{fontWeight:'bold'}}, [`${e.title}:`, h('span',{style:{fontWeight:'normal',float:'right',paddingLeft:'10px'}},`${e.label}`)]);
-        }
-    
-      });
-    
-      out.push.apply(out,item1);
-
-    }
+    out.push.apply(out,item1);
   }
     
   return out;
