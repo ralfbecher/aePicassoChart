@@ -4,6 +4,10 @@ import bp from './buildpicasso.js';
 
 var qlik = window.require('qlik');
 
+var isPrinting = function() {
+  return (typeof window.qlikPrintingService !== 'undefined') && (typeof window.qlikPrintingService.renderSnapshot !== 'undefined');
+}
+
 var createPicassoWithStyle = function(self, layout, qTheme) {
   //Default Theme
   var style = {
@@ -124,39 +128,40 @@ var redrawChart = function($element, layout, self, first) {
 
 var getDataPages = function(qlik, layout, enigmaModel, maxPages) {
   var pageWidth = Math.max(1, layout.qHyperCube.qSize.qcx),
-    pageHeight = Math.floor(10000 / pageWidth),
-    cubeSize = layout.qHyperCube.qSize.qcy,
-    remainingPages = Math.min((cubeSize / pageHeight), maxPages),
-    cubeData = [];
+  pageHeight = Math.floor(10000 / pageWidth),
+  cubeSize = layout.qHyperCube.qSize.qcy,
+  remainingPages = Math.min((cubeSize / pageHeight), maxPages),
+  cubeData = [];
 
-    var dataPages = [];
-    for (var i = 0; i < remainingPages; i++) {
-      dataPages.push({
-        qTop: pageHeight * i,
-        qLeft: 0,
-        qWidth: pageWidth,
-        qHeight: pageHeight
-      });
-    }
-
-    var objectId = layout.qExtendsId ? layout.qExtendsId : 
-      (layout.sourceObjectId ? layout.sourceObjectId : layout.qInfo.qId);
-    
-    return enigmaModel.app.getObject(objectId).then(function (obj) {
-      var promises = dataPages.map(function (page) {
-        return obj.getHyperCubeData('/qHyperCubeDef', [page]);
-      });
-      return qlik.Promise.all(promises).then(function (pages) {
-        pages.forEach(function (page) {
-          cubeData = cubeData.concat(page[0].qMatrix);
-        });
-        return cubeData;
-      });
+  var dataPages = [];
+  for (var i = 0; i < remainingPages; i++) {
+    dataPages.push({
+      qTop: pageHeight * i,
+      qLeft: 0,
+      qWidth: pageWidth,
+      qHeight: pageHeight
     });
+  }
+
+  var objectId = layout.qExtendsId ? layout.qExtendsId : 
+    (layout.sourceObjectId ? layout.sourceObjectId : layout.qInfo.qId);
+  
+  return enigmaModel.app.getObject(objectId).then(function (obj) {
+    var promises = dataPages.map(function (page) {
+      return obj.getHyperCubeData('/qHyperCubeDef', [page]);
+    });
+    return qlik.Promise.all(promises).then(function (pages) {
+      pages.forEach(function (page) {
+        cubeData = cubeData.concat(page[0].qMatrix);
+      });
+      return cubeData;
+    });
+  });
 }
 
 var updateData = function(qlik, self, layout, enigma, maxPages) {
   if (!maxPages || maxPages <= 0) maxPages = 1;
+
   getDataPages(qlik, layout, enigma, maxPages)
   .then(data => {
     layout.qHyperCube.qDataPages[0].qMatrix = data;
@@ -190,29 +195,38 @@ var updateData = function(qlik, self, layout, enigma, maxPages) {
 
 export default function($element, layout) {
   var self = this;
-  self.enigma = $element.scope().model.enigmaModel;
+
+  if (!isPrinting()) {
+    self.enigma = $element.scope().model.enigmaModel;
+  } else {
+    self.enigma = {};
+  }
   // self.objId = layout.qInfo.qId;
   bp.setProps(layout);
   //Theme Processing
   var app = qlik.currApp(this);
   //console.log(app.theme);
-  try{
-    var theme = app.theme.getApplied().then(function(qtheme) {
-      if (typeof layout.theme == 'undefined') layout.theme = qtheme;
-      if (layout.theme.id != qtheme.id || bp.props == null) {
-        layout.theme = qtheme;
-        bp.setProps(layout);
-        //console.log(qtheme.getStyle('object', 'label.name', 'color'));
-        //console.log(qtheme);
-        createPicassoWithStyle(self, layout, qtheme);
-        redrawChart($element, layout, self, true);
-      }
 
-    });
-  }catch(e){
-    console.log("Could not load theme");
+  
+  if (!isPrinting()) {
+    try{
+      var theme = app.theme.getApplied().then(function(qtheme) {
+        if (typeof layout.theme == 'undefined') layout.theme = qtheme;
+        if (layout.theme.id != qtheme.id || bp.props == null) {
+          layout.theme = qtheme;
+          bp.setProps(layout);
+          //console.log(qtheme.getStyle('object', 'label.name', 'color'));
+          //console.log(qtheme);
+          createPicassoWithStyle(self, layout, qtheme);
+          redrawChart($element, layout, self, true);
+        }
+
+      });
+    }catch(e){
+      console.log("Could not load theme");
+    }
   }
-
+  
   /*this.backendApi.setCacheOptions({
     enabled: false
   });*/
@@ -247,7 +261,18 @@ export default function($element, layout) {
   }
   createPicassoWithStyle(self, layout, null);
   redrawChart($element, layout, self, first);
-  updateData(qlik, self, layout, self.enigma, qlik.navigation.getMode() === 'edit'? 1 : layout.dataPages);
+  if (!isPrinting()) {
+    // update data if we have multiple pages
+    updateData(qlik, self, layout, self.enigma, qlik.navigation.getMode() === 'edit'? 1 : layout.dataPages);
+  } else {
+    self.chart.update({
+      data: [{
+        type: 'q',
+        key: 'qHyperCube',
+        data: layout.qHyperCube
+      }]
+    });
+  }
   
   return new qlik.Promise(function(resolve, reject) {
     if (self.chartBrush[0].isActive) self.chartBrush[0].end();
